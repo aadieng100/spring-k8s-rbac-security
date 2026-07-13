@@ -295,7 +295,7 @@ Configure the IAM Role to **only** trust your specific EKS OIDC Provider, scoped
 **Abdoul Aziz Dieng**  
 *DevSecOps Engineer · Dakar, Senegal*
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/abdoul-aziz-dieng)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/aadieng)
 [![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?logo=github&logoColor=white)](https://github.com/aadieng100)
 
 ---
