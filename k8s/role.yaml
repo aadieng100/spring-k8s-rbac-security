@@ -1,0 +1,16 @@
+# Highly-restricted Role limited strictly to the application namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: secure-api-role
+  namespace: secure-api-ns
+  labels:
+    app.kubernetes.io/name: secure-api
+    app.kubernetes.io/part-of: spring-rbac-showcase
+rules:
+  # Core API Group (empty string "")
+  - apiGroups: [""]
+    # Only allow access to ConfigMaps resource
+    resources: ["configmaps"]
+    # Strict list of read-only actions (No create, delete, or update allowed)
+    verbs: ["get", "list", "watch"]
