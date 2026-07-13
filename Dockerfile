@@ -17,8 +17,9 @@ RUN mvn clean package -DskipTests
 # ==========================================
 FROM eclipse-temurin:21-jre-alpine AS runner
 
-# Create a dedicated non-root system group and user to apply least privilege
-RUN addgroup --system spring && adduser --system spring --ingroup spring
+# Create a dedicated non-root system group and user with explicit UID/GID 1000
+# to align perfectly with the Kubernetes securityContext (runAsUser/runAsGroup)
+RUN addgroup -g 1000 -S spring && adduser -u 1000 -S spring -G spring
 
 WORKDIR /app
 

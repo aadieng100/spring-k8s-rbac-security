@@ -1,0 +1,89 @@
+# Production-ready secure Deployment for the Spring Boot API
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secure-api-deployment
+  namespace: secure-api-ns
+  labels:
+    app: secure-api
+    app.kubernetes.io/name: secure-api
+    app.kubernetes.io/part-of: spring-rbac-showcase
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: secure-api
+  template:
+    metadata:
+      labels:
+        app: secure-api
+    spec:
+      # Explicitly bind our custom ServiceAccount to this Pod
+      serviceAccountName: secure-api-sa
+      
+      # DevSecOps Practice: Mount the token for validation testing.
+      automountServiceAccountToken: true
+
+      # Pod-level security context
+      securityContext:
+        # Prevent running any container in the pod as root
+        runAsNonRoot: true
+        # Run process under the custom non-root user ID (UID 1000)
+        runAsUser: 1000
+        runAsGroup: 1000
+        # Restrict system groups access
+        fsGroup: 1000
+
+      containers:
+        - name: secure-api
+          image: secure-api:1.0.0
+          # Ensure Kubernetes pulls the local kind-loaded image instead of Docker Hub
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          
+          # Container-level security context (Hardening)
+          securityContext:
+            # Prevent the process from gaining more privileges than its parent
+            allowPrivilegeEscalation: false
+            # Mount the root filesystem as read-only to block attackers from writing malicious scripts
+            readOnlyRootFilesystem: true
+            # Drop all default kernel capabilities to minimize kernel exploitation surface
+            capabilities:
+              drop:
+                - ALL
+          
+          # Mount the writeable temporary volume for Tomcat
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+          
+          # Liveness and Readiness probes to monitor application state
+          livenessProbe:
+            httpGet:
+              path: /api/v1/status
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/v1/status
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+
+          # Prevent resource exhaustion (Denial of Service mitigation)
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+
+      # Declare volumes for the Pod
+      volumes:
+        # High-security temporary volume that exists only in memory/node disk
+        # and is destroyed when the Pod is deleted
+        - name: tmp-volume
+          emptyDir: {}
