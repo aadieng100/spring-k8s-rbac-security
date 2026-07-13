@@ -1,0 +1,10 @@
+# kind-config.yaml
+# Kind cluster configuration with port mapping to access the Spring Boot API locally
+apiVersion: kind.x-k8s.io/v1alpha4
+kind: Cluster
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 30080 # NodePort configured later in the K8s Service
+        hostPort: 8080       # Port mapped on your localhost
+        protocol: TCP

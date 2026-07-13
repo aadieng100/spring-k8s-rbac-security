@@ -1,0 +1,8 @@
+# Namespace definition to isolate all resources related to the secure API
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: secure-api-ns
+  labels:
+    environment: local-dev
+    security-zone: restricted
